@@ -1,0 +1,7 @@
+config/
+  app-a.yml
+  app-a-development.yml
+  app-a-production.yml
+  app-b.yml
+  app-b-development.yml
+  app-b-production.yml

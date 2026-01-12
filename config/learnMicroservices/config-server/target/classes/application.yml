@@ -1,0 +1,43 @@
+# Spring Cloud Config Server Configuration
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          # GitHub Repository Configuration
+          uri: https://github.com/abhis6400/microservices-config.git
+          default-label: main
+          search-paths: config
+          # For public repos, no authentication needed
+          # For private repos, use username/password or SSH key
+          
+          # Optional: Clone on startup to verify connection
+          clone-on-start: true
+          
+          # Optional: Force pull to ensure latest config
+          force-pull: true
+
+# Server Configuration
+server:
+  port: 8888
+  servlet:
+    context-path: /
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,configprops
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud: DEBUG
+    org.springframework.boot: INFO

@@ -1,0 +1,6 @@
+com\masterclass\appa\dto\GreetingResponse$GreetingResponseBuilder.class
+com\masterclass\appa\controller\AppAController.class
+com\masterclass\appa\config\AppProperties.class
+com\masterclass\appa\dto\GreetingResponse.class
+com\masterclass\appa\AppAApplication.class
+com\masterclass\appa\clients\AppBClient.class

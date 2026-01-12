@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: eureka-server
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Eureka server itself doesn't need to register with another Eureka server
+    # In a production cluster, this would be true and point to other Eureka servers
+    register-with-eureka: false
+    # Eureka server doesn't need to fetch the registry from other servers in standalone mode
+    fetch-registry: false
+    # Service URL for eureka clients to connect to this server
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  
+  # Server configuration for development/testing
+  server:
+    # Disable self-preservation mode for development
+    # In production, keep this enabled (true)
+    enable-self-preservation: false
+    # For development, evict expired instances every 10 seconds
+    eviction-interval-timer-in-ms: 10000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

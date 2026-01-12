@@ -1,0 +1,6 @@
+com\masterclass\appb\clients\AppAClient.class
+com\masterclass\appb\controller\AppBController.class
+com\masterclass\appb\dto\ProductResponse$ProductResponseBuilder.class
+com\masterclass\appb\config\AppProperties.class
+com\masterclass\appb\AppBApplication.class
+com\masterclass\appb\dto\ProductResponse.class
