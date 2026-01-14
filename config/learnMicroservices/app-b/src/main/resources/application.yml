@@ -18,6 +18,18 @@ spring:
         initial-interval: 1000
         max-interval: 2000
         max-attempts: 6
+  
+  # ===== DISTRIBUTED TRACING CONFIGURATION (Phase 3) =====
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0
+  
+  # Enable trace ID propagation in HTTP headers (B3 format)
+  # This receives trace ID from HTTP headers sent by other services
+  tracing:
+    propagation:
+      type: b3
 
 # Default values (overridden by Config Server)
 # ⚠️ COMMENTED OUT - Testing if config server is being used
@@ -47,7 +59,11 @@ management:
 logging:
   level:
     root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.cloud: DEBUG
     com.masterclass: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [TRACE: %X{traceId}] %msg%n"
 
 # Eureka Client Configuration
 eureka:

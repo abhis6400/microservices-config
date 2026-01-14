@@ -51,6 +51,18 @@ spring:
             allowedHeaders: "*"
             allowCredentials: false
             maxAge: 3600
+  
+  # ===== DISTRIBUTED TRACING CONFIGURATION (Phase 3) =====
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0  # Sample 100% of requests (for learning)
+  
+  # Enable trace ID propagation in HTTP headers (B3 format)
+  # This sends trace ID to backend services via HTTP headers
+  tracing:
+    propagation:
+      type: b3
 
 # Server Configuration
 server:
@@ -108,8 +120,7 @@ logging:
     org.springframework.web: DEBUG
     com.masterclass: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [TRACE: %X{traceId}] %msg%n"
 
 # Info Endpoint Configuration
 info:

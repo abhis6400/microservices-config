@@ -13,33 +13,61 @@ spring:
       enabled: true
       
       # Routes definition
+      # 
+      # ROUTING STRATEGY:
+      # -----------------
+      # App A has TWO controllers:
+      #   1. AppAController:       @RequestMapping("") - Maps to root /
+      #   2. ResilienceController: @RequestMapping("/api/resilience") - Maps to /api/resilience
+      # 
+      # Gateway routes:
+      #   - /api/app-a/** (except /api/app-a/api/resilience/**) → Strip /api/app-a → Forward to AppAController
+      #   - /api/app-a/api/resilience/** → Strip /api/app-a → Forward to ResilienceController
+      #
       routes:
-        # Route to App A
+        # ============================================================
+        # APP A ROUTE - Handles ALL App A endpoints
+        # ============================================================
+        # Matches:
+        #   /api/app-a/greeting/{name}           → /greeting/{name}
+        #   /api/app-a/status                    → /status
+        #   /api/app-a/call-app-b/**             → /call-app-b/**
+        #   /api/app-a/api/resilience/**         → /api/resilience/** (NEW - Phase 4)
+        #
         - id: app-a-route
           uri: lb://app-a
           predicates:
-            # Match requests to /api/app-a/**
             - Path=/api/app-a/**
           filters:
-            # Remove /api/app-a prefix and forward to /
+            # Remove /api/app-a prefix and forward the rest to service
+            # Example 1: /api/app-a/greeting/John → /greeting/John (AppAController)
+            # Example 2: /api/app-a/api/resilience/app-b/status → /api/resilience/app-b/status (ResilienceController)
             - RewritePath=/api/app-a(?<segment>/?.*), $\{segment}
-            # Add custom header to track request origin
+            # Add tracking headers
             - AddRequestHeader=X-Gateway-Route,app-a
-            # Add response header with execution time
             - AddResponseHeader=X-Gateway-Response,true
         
-        # Route to App B
+        # ============================================================
+        # APP B ROUTE - Handles ALL App B endpoints
+        # ============================================================
+        # Matches:
+        #   /api/app-b/product/{id}
+        #   /api/app-b/health
+        #   /api/app-b/status
+        #   /api/app-b/greeting/{name}
+        #   /api/app-b/call-app-a/**
+        #   /api/app-b/** (any other endpoint)
+        #
         - id: app-b-route
           uri: lb://app-b
           predicates:
-            # Match requests to /api/app-b/**
             - Path=/api/app-b/**
           filters:
-            # Remove /api/app-b prefix and forward to /
+            # Remove /api/app-b prefix and forward the rest to service
+            # Example: /api/app-b/product/101 → /product/101
             - RewritePath=/api/app-b(?<segment>/?.*), $\{segment}
-            # Add custom header to track request origin
+            # Add tracking headers
             - AddRequestHeader=X-Gateway-Route,app-b
-            # Add response header with execution time
             - AddResponseHeader=X-Gateway-Response,true
       
       # Global filters (applied to all routes)
@@ -51,6 +79,18 @@ spring:
             allowedHeaders: "*"
             allowCredentials: false
             maxAge: 3600
+  
+  # ===== DISTRIBUTED TRACING CONFIGURATION (Phase 3) =====
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0  # Sample 100% of requests (for learning)
+  
+  # Enable trace ID propagation in HTTP headers (B3 format)
+  # This sends trace ID to backend services via HTTP headers
+  tracing:
+    propagation:
+      type: b3
 
 # Server Configuration
 server:
@@ -108,8 +148,7 @@ logging:
     org.springframework.web: DEBUG
     com.masterclass: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [TRACE: %X{traceId}] %msg%n"
 
 # Info Endpoint Configuration
 info:
@@ -119,7 +158,11 @@ info:
     version: 1.0.0
     author: Microservices Masterclass
   gateway:
-    routes: 2
+    total-routes: 2
+    routing-strategy: Catch-all with unique prefixes (Best Practice)
     services: app-a, app-b
     port: 9002
     discovery: Eureka
+  phase-4:
+    resilience-enabled: true
+    note: All App A endpoints automatically routed, including resilience endpoints

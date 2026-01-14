@@ -1,0 +1,38 @@
+{
+  "groups": [
+    {
+      "name": "app",
+      "type": "com.masterclass.appa.config.AppProperties",
+      "sourceType": "com.masterclass.appa.config.AppProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.description",
+      "type": "java.lang.String",
+      "sourceType": "com.masterclass.appa.config.AppProperties"
+    },
+    {
+      "name": "app.environment",
+      "type": "java.lang.String",
+      "sourceType": "com.masterclass.appa.config.AppProperties"
+    },
+    {
+      "name": "app.name",
+      "type": "java.lang.String",
+      "sourceType": "com.masterclass.appa.config.AppProperties"
+    },
+    {
+      "name": "app.timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "com.masterclass.appa.config.AppProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "app.version",
+      "type": "java.lang.String",
+      "sourceType": "com.masterclass.appa.config.AppProperties"
+    }
+  ],
+  "hints": []
+}

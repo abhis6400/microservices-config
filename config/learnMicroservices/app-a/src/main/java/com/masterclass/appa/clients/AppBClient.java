@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
  * Example: appBClient.getAppBStatus() → GET /api/app-b/status on App B service
  */
 @FeignClient(
-    name = "app-b",
-    url = "http://localhost:8081"  // Fallback URL (Eureka preferred)
+    name = "app-b"
+    // URL will be discovered from Eureka service registry
 )
 public interface AppBClient {
     
